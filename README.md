@@ -72,7 +72,6 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
       1. Run `sudo nano /etc/sysctl.conf`.
       1. Ad this line at the end `vm.swappiness=10`.
 
-
 ### Setting Up HTML and SQL Servers
 
 1. Install the HTML server (Nginx is used here).
@@ -120,7 +119,7 @@ Most compilations can take a long time to run.
        libbz2-dev libzstd-dev liblzma-dev \
        libcurl4-openssl-dev \
        texinfo texlive texlive-fonts-extra \
-       screen wget openjdk-8-jdk
+       screen wget openjdk-8-jdk libssl-dev
       ```
 1. Download and extract the source files. Use the link for the latest version on CRAN.
       ```
@@ -151,6 +150,7 @@ Most compilations can take a long time to run.
       exit
       cd
       ```
+      
 ### Install Shiny-Server
 1. Install R package dependencies for shiny-server.
       ```
@@ -179,3 +179,20 @@ Most compilations can take a long time to run.
       cd
       rm -rf cmake-3.17.0*
       ```
+      
+### Setting Up Dynamic DNS
+This step is needed if you don't have a static public IP (most residential Internet connections does not have a static IP). As a solution, a dynamic DNS can be set. No-IP is used here (https://www.noip.com).
+1. Setup an account with No-IP.
+1. Select a domain name of choice.
+1. Run the following commands on the Raspberry Pi.
+      ```
+      mkdir /home/pi/noip
+      cd /home/pi/noip
+      wget https://www.noip.com/client/linux/noip-duc-linux.tar.gz
+      tar vzxf noip-duc-linux.tar.gz
+      cd noip-2.1.9-1
+      sudo make
+      sudo make install
+      ```
+1. Login with your No-IP account username and password.
+1. 

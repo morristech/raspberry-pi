@@ -5,14 +5,14 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
 ### Tested On
 * Raspberry Pi 4/4GB.
 * 16 GB SD card.
-* Raspbian Buster Lite.
+* Raspbian Buster Lite
     * Version: February 2020
     * Release Date: 2020-02-13
     * Kernel version: 4.19
     * Some steps **might** not work on other versions.
 * Wired ethernet connection. 
     * Can be changed slightly to make it work for wireless connections.
-* R.
+* R
    * Version: 4.0.0 (Arbor Day)
    * Release Date: 2020-04-24
 * PostgreSQL
@@ -112,7 +112,8 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
          ```
 
 ### Install R
-1. Install dependencies. Run the following code. This can take some time.
+Most compilations can take a long time to run.
+1. Install dependencies. Run the following code.
       ```
       sudo apt-get install -y gfortran libreadline6-dev libx11-dev libxt-dev \
        libpng-dev libjpeg-dev libcairo2-dev xvfb \
@@ -128,16 +129,16 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
       sudo su
       tar zxvf R-4.0.0.tar.gz      
       ```
-1. If using an R version >=4.0.0, install PCRE2. Select the latest version from (https://ftp.pcre.org/pub/pcre/).
+1. If using an R version >=4.0.0, install PCRE2. Select the latest version from https://ftp.pcre.org/pub/pcre/.
    ```
-   wget https://ftp.pcre.org/pub/pcre/pcre2-10.32.tar.gz
-   tar zxvf pcre2-10.32.tar.gz
-   cd pcre2-10.32
+   wget https://ftp.pcre.org/pub/pcre/pcre2-10.34.tar.gz
+   tar zxvf pcre2-10.34.tar.gz
+   cd pcre2-10.34
    ./configure
    make
    make install
    cd ..
-   rm -rf pcre2-10.32*
+   rm -rf pcre2-10.34*
    ```
 1. Install R.
       ```
@@ -149,4 +150,32 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
       rm -rf R-4.0.0*
       exit
       cd
+      ```
+### Install Shiny-Server
+1. Install R package dependencies for shiny-server.
+      ```
+      sudo su - -c "R -e \"install.packages('later', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('fs', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('Rcpp', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('httpuv', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('mime', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('jsonlite', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('digest', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('htmltools', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('xtable', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('R6', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('Cairo', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('sourcetools', repos='http://cran.rstudio.com/')\""
+      sudo su - -c "R -e \"install.packages('shiny', repos='http://cran.rstudio.com/')\""
+      ```
+1. Install cmake from source. Select the latest version from https://cmake.org/files/.
+      ```
+      wget https://cmake.org/files/v3.17/cmake-3.17.1.tar.gz
+      tar xzf cmake-3.17.1.tar.gz
+      cd cmake-3.17.1
+      ./configure
+      make
+      sudo make install
+      cd
+      rm -rf cmake-3.17.0*
       ```

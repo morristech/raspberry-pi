@@ -137,6 +137,7 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
    make
    make install
    cd ..
+   rm -rf pcre2-10.32*
    ```
 1. Install R.
       ```

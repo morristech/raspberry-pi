@@ -15,6 +15,8 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
 * R.
    * Version: 4.0.0 (Arbor Day)
    * Release Date: 2020-04-24
+* PostgreSQL
+   * Version: 11.7
 
 ### Boot to Raspbian
 1. Download the latest version of Raspian from https://www.raspberrypi.org/downloads/raspbian/.
@@ -124,11 +126,16 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
       cd /usr/local/src
       sudo wget https://cran.rstudio.com/src/base/R-4/R-4.0.0.tar.gz
       sudo su
-      tar zxvf R-4.0.0.tar.gz
-      cd R-4.0.0
+      tar zxvf R-4.0.0.tar.gz      
       ```
+1. If using an R version >=4.0.0, install PCRE2. Select the latest version from (https://ftp.pcre.org/pub/pcre/).
+   ```
+   wget https://ftp.pcre.org/pub/pcre/pcre2-10.32.tar.gz
+   tar zxvf pcre2-10.32.tar.gz
+   ```
 1. Install R.
       ```
+      cd R-4.0.0
       ./configure --enable-R-shlib
       make
       make install

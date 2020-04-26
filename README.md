@@ -60,7 +60,7 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
       1. Run `sudo apt update && sudo apt full-upgrade`.
 1. Set up swap memory (used 3GB in this case).
    1. Run the following commands.
-      ```bash
+      ```
       sudo /bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=3072
       sudo /sbin/mkswap /var/swap.1
       sudo /sbin/swapon /var/swap.1
@@ -75,14 +75,14 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
 
 1. Install the HTML server (Nginx is used here).
       1. Run the following commands.
-      ```bash
+      ```
       sudo apt install nginx
       sudo chown -R www-data:pi /var/www/html/
       sudo chmod -R 770 /var/www/html/
       ```
 1. Install the SQL server (PostgreSQL is used here).
       1. Run the following command.
-         ```bash
+         ```
          sudo apt install postgresql libpq-dev postgresql-client postgresql-client-common
          ```
       1. Check the version installed. Run `pg_config --version`.
@@ -90,7 +90,7 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
       1. Run the command `sudo nano /etc/postgresql/11/main/pg_hba.conf`. Use the correct version here.
       1. Modify the "local" line to `local all all md5`.
       1. Add the following lines
-         ```bash
+         ```
          host all all 192.168.0.0/24 trust
          host all all 0.0.0.0/0 password
          ```
@@ -99,7 +99,7 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
 1. Restart postgresql service.
       1. Run `sudo systemctl restart postgresql`.
 1. Create a user named **pi** and a database named **pi**.
-      1. Run `sudo su postgres`.
+      1. Run ```sudo su postgres```.
       1. Run `createuser pi -P --interactive`. Then enter a password.
       1. Run `psql`.
       1. Run 
@@ -111,7 +111,7 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
 
 ### Install `R`
 1. Install dependencies. Run the following code.
-      ```bash
+      ```
       sudo apt-get install -y gfortran libreadline6-dev libx11-dev libxt-dev \
        libpng-dev libjpeg-dev libcairo2-dev xvfb \
        libbz2-dev libzstd-dev liblzma-dev \
@@ -120,7 +120,7 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
        screen wget openjdk-8-jdk
       ```
 1. Download and extract the source files. Use the link for the latest version on CRAN.
-      ```bash
+      ```
       cd /usr/local/src
       sudo wget https://cran.rstudio.com/src/base/R-4/R-4.0.0.tar.gz
       sudo su
@@ -128,7 +128,7 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
       cd R-4.0.0
       ```
 1. Install R.
-      ```bash
+      ```
       ./configure --enable-R-shlib
       make
       make install

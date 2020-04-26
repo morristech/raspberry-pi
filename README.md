@@ -109,8 +109,8 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
          exit
          ```
 
-### Install `R`
-1. Install dependencies. Run the following code.
+### Install R
+1. Install dependencies. Run the following code. This can take some time.
       ```
       sudo apt-get install -y gfortran libreadline6-dev libx11-dev libxt-dev \
        libpng-dev libjpeg-dev libcairo2-dev xvfb \

@@ -76,11 +76,11 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
 
 1. Install the HTML server (Nginx is used here).
       1. Run the following commands.
-      ```
-      sudo apt install nginx
-      sudo chown -R www-data:pi /var/www/html/
-      sudo chmod -R 770 /var/www/html/
-      ```
+         ```
+         sudo apt install nginx
+         sudo chown -R www-data:pi /var/www/html/
+         sudo chmod -R 770 /var/www/html/
+         ```
 1. Install the SQL server (PostgreSQL is used here).
       1. Run the following command.
          ```
@@ -117,7 +117,7 @@ Most compilations can take a long time to run.
       sudo apt-get install -y gfortran libreadline6-dev libx11-dev libxt-dev \
        libpng-dev libjpeg-dev libcairo2-dev xvfb \
        libbz2-dev libzstd-dev liblzma-dev \
-       libcurl4-openssl-dev libssl-dev \
+       libcurl4-openssl-dev libssl-dev libxml2-dev \
        texinfo texlive texlive-fonts-extra \
        screen wget openjdk-8-jdk git
       ```
@@ -129,16 +129,16 @@ Most compilations can take a long time to run.
       tar zxvf R-4.0.0.tar.gz      
       ```
 1. If using an R version >=4.0.0, install PCRE2. Select the latest version from https://ftp.pcre.org/pub/pcre/.
-   ```
-   wget https://ftp.pcre.org/pub/pcre/pcre2-10.34.tar.gz
-   tar zxvf pcre2-10.34.tar.gz
-   cd pcre2-10.34
-   ./configure
-   make
-   make install
-   cd ..
-   rm -rf pcre2-10.34*
-   ```
+      ```
+      wget https://ftp.pcre.org/pub/pcre/pcre2-10.34.tar.gz
+      tar zxvf pcre2-10.34.tar.gz
+      cd pcre2-10.34
+      ./configure
+      make
+      make install
+      cd ..
+      rm -rf pcre2-10.34*
+      ```
 1. Install R.
       ```
       cd R-4.0.0
@@ -218,39 +218,39 @@ Most compilations can take a long time to run.
 1. Configure shiny-server auto start.
       1. Run `sudo nano /lib/systemd/system/shiny-server.service`.
       1. Add the following lines and save.
-      ```
-          #!/usr/bin/env bash
-          [Unit]
-          Description=ShinyServer
-          [Service]
-          Type=simple
-          ExecStart=/usr/bin/shiny-server
-          Restart=always
-          # Environment="LANG=en_US.UTF-8"
-          ExecReload=/bin/kill -HUP $MAINPID
-          ExecStopPost=/bin/sleep 5
-          RestartSec=1
-          [Install]
-          WantedBy=multi-user.target
+         ```
+             #!/usr/bin/env bash
+             [Unit]
+             Description=ShinyServer
+             [Service]
+             Type=simple
+             ExecStart=/usr/bin/shiny-server
+             Restart=always
+             # Environment="LANG=en_US.UTF-8"
+             ExecReload=/bin/kill -HUP $MAINPID
+             ExecStopPost=/bin/sleep 5
+             RestartSec=1
+             [Install]
+             WantedBy=multi-user.target
 
-      ```
+         ```
       1. Start the server.
-      ```
-      sudo chown shiny /lib/systemd/system/shiny-server.service
-      sudo systemctl daemon-reload
-      sudo systemctl enable shiny-server
-      sudo systemctl start shiny-server
-      ```
+         ```
+         sudo chown shiny /lib/systemd/system/shiny-server.service
+         sudo systemctl daemon-reload
+         sudo systemctl enable shiny-server
+         sudo systemctl start shiny-server
+         ```
       1. Set up user permission.
-      ```
-      sudo groupadd shiny-apps
-      sudo usermod -aG shiny-apps pi
-      sudo usermod -aG shiny-apps shiny
-      cd /srv/shiny-server
-      sudo chown -R pi:shiny-apps .
-      sudo chmod g+w .
-      sudo chmod g+s .
-      ```
+         ```
+         sudo groupadd shiny-apps
+         sudo usermod -aG shiny-apps pi
+         sudo usermod -aG shiny-apps shiny
+         cd /srv/shiny-server
+         sudo chown -R pi:shiny-apps .
+         sudo chmod g+w .
+         sudo chmod g+s .
+         ```
 
 ### Install RStudio Server
 1. Install Rust and Cargo. 
@@ -273,12 +273,41 @@ Most compilations can take a long time to run.
       # ./install-crashpad
       # sudo ./install-crashpad
       ```
-1. Install system dependencies
+1. Install system dependencies.
       ```
-      cd rstudio/dependencies/common
       sudo su
+      git clone https://github.com/raspberrypi-ui/pam
+      cd pam/
+      ./configure
+      make
+      make install
+      cd rstudio/dependencies/common      
       ./install-common --exclude-qt-sdk
       ```
+1. Configure Java.
+      ```
+      java -Xms1800m
+      ```
+1. Install gwt compiler.
+      1. Run the following commands.
+         ```
+         cd /home/pi/rstudio
+         wget http://dl.google.com/closure-compiler/compiler-latest.zip
+         unzip compiler-latest.zip
+         ```
+      1. Replace all files if prompted.
+      1. Run the following commands.
+         ```
+         rm COPYING README.md compiler-latest.zip
+         mv closure-compiler-v20*.jar /home/pi/rstudio/src/gwt/tools/compiler/compiler.jar
+         ```
+1. Install RStudio
+   ```
+   mkdir build
+   cd build
+   cmake .. -DRSTUDIO_TARGET=Server -DCMAKE_BUILD_TYPE=Release
+   make install
+   ```
 
 ### Setting Up Dynamic DNS
 This step is needed if you don't have a static public IP (most residential Internet connections does not have a static IP). As a solution, a dynamic DNS can be set. No-IP is used here (https://www.noip.com).

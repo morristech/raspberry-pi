@@ -132,6 +132,11 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
    ```
    wget https://ftp.pcre.org/pub/pcre/pcre2-10.32.tar.gz
    tar zxvf pcre2-10.32.tar.gz
+   cd pcre2-10.32
+   ./configure
+   make
+   make install
+   cd ..
    ```
 1. Install R.
       ```

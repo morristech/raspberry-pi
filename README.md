@@ -40,7 +40,7 @@
 1. Setup a static IP.
     1. Run `sudo nano /etc/dhcpcd.conf`.
     1. Change the following lines according to the IP address that should be set.
-        ```
+        ```bash
         # Example static IP configuration:
         interface eth0
         static ip_address=<<192.168.0.10>>/<<24>>

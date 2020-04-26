@@ -112,14 +112,14 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
 
 ### Install R
 Most compilations can take a long time to run.
-1. Install dependencies. Run the following code.
+1. Install dependencies for R, shiny-server and RStudio. Run the following code.
       ```
       sudo apt-get install -y gfortran libreadline6-dev libx11-dev libxt-dev \
        libpng-dev libjpeg-dev libcairo2-dev xvfb \
        libbz2-dev libzstd-dev liblzma-dev \
-       libcurl4-openssl-dev \
+       libcurl4-openssl-dev libssl-dev \
        texinfo texlive texlive-fonts-extra \
-       screen wget openjdk-8-jdk libssl-dev
+       screen wget openjdk-8-jdk git
       ```
 1. Download and extract the source files. Use the link for the latest version on CRAN.
       ```
@@ -177,9 +177,103 @@ Most compilations can take a long time to run.
       make
       sudo make install
       cd
-      rm -rf cmake-3.17.0*
+      rm -rf cmake-3.17.1*
       ```
-      
+1. Install shiny-server
+      ```
+      git clone https://github.com/rstudio/shiny-server.git
+      cd shiny-server
+      DIR=`pwd`
+      PATH=$DIR/bin:$PATH
+      mkdir tmp
+      cd tmp
+      PYTHON=`which python`
+      sudo cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DPYTHON="$PYTHON" ../
+      sudo make
+      mkdir ../build
+      sed -i '8s/.*/NODE_SHA256=a865e69914c568fcb28be7a1bf970236725a06a8fc66530799300181d2584a49/' ../external/node/install-node.sh # node-v12.15.0-linux-armv7l.tar.xz
+      sed -i 's/linux-x64.tar.xz/linux-armv7l.tar.xz/' ../external/node/install-node.sh
+      sed -i 's/https:\/\/github.com\/jcheng5\/node-centos6\/releases\/download\//https:\/\/nodejs.org\/dist\//' ../external/node/install-node.sh
+      (cd .. && sudo ./external/node/install-node.sh)
+      (cd .. && ./bin/npm --python="${PYTHON}" install --no-optional)
+      (cd .. && ./bin/npm --python="${PYTHON}" rebuild)
+      sudo make install
+      ```
+1. Configure shiny-server
+      ```
+      cd
+      sudo ln -s /usr/local/shiny-server/bin/shiny-server /usr/bin/shiny-server
+      sudo useradd -r -m shiny
+      sudo mkdir -p /var/log/shiny-server
+      sudo mkdir -p /srv/shiny-server
+      sudo mkdir -p /var/lib/shiny-server
+      sudo chown shiny /var/log/shiny-server
+      sudo mkdir -p /etc/shiny-server
+      cd
+      sudo wget \
+      https://raw.github.com/rstudio/shiny-server/master/config/upstart/shiny-server.conf \
+      -O /etc/init/shiny-server.conf
+      sudo chmod 777 -R /srv      
+      ```
+1. Configure shiny-server auto start.
+      1. Run `sudo nano /lib/systemd/system/shiny-server.service`.
+      1. Add the following lines and save.
+      ```
+          #!/usr/bin/env bash
+          [Unit]
+          Description=ShinyServer
+          [Service]
+          Type=simple
+          ExecStart=/usr/bin/shiny-server
+          Restart=always
+          # Environment="LANG=en_US.UTF-8"
+          ExecReload=/bin/kill -HUP $MAINPID
+          ExecStopPost=/bin/sleep 5
+          RestartSec=1
+          [Install]
+          WantedBy=multi-user.target
+
+      ```
+      1. Start the server.
+      ```
+      sudo chown shiny /lib/systemd/system/shiny-server.service
+      sudo systemctl daemon-reload
+      sudo systemctl enable shiny-server
+      sudo systemctl start shiny-server
+      ```
+      1. Set up user permission.
+      ```
+      sudo groupadd shiny-apps
+      sudo usermod -aG shiny-apps pi
+      sudo usermod -aG shiny-apps shiny
+      cd /srv/shiny-server
+      sudo chown -R pi:shiny-apps .
+      sudo chmod g+w .
+      sudo chmod g+s .
+      ```
+
+### Install RStudio Server
+1. Install Rust and Cargo. 
+      1. Run `sudo curl https://sh.rustup.rs -sSf | sh` and select ''Proceed with installation'' (1).
+      1. Run `source $HOME/.cargo/env`.
+1. Install sentry-cli. Run the following commands.
+      ```
+      sudo git clone https://github.com/getsentry/sentry-cli.git
+      sudo chown -R pi sentry-cli
+      cd sentry-cli
+      cargo build
+      cd
+      sudo rm -rf sentry-cli
+      ```
+1. Clone RStudio from GitHub.
+      1. Run `sudo git clone https://github.com/rstudio/rstudio.git`.
+      1. To avoid installing crashpad, run `sudo nano /home/pi/rstudio/dependencies/common/install-common`.
+      1. Comment the following lines.
+      ```
+      # ./install-crashpad
+      # sudo ./install-crashpad
+      ```
+
 ### Setting Up Dynamic DNS
 This step is needed if you don't have a static public IP (most residential Internet connections does not have a static IP). As a solution, a dynamic DNS can be set. No-IP is used here (https://www.noip.com).
 1. Setup an account with No-IP.

@@ -12,6 +12,9 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
     * Some steps **might** not work on other versions.
 * Wired ethernet connection. 
     * Can be changed slightly to make it work for wireless connections.
+* R.
+   * Version: 4.0.0 (Arbor Day)
+   * Release Date: 2020-04-24
 
 ### Boot to Raspbian
 1. Download the latest version of Raspian from https://www.raspberrypi.org/downloads/raspbian/.
@@ -31,7 +34,7 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
 1. Run the command `sudo raspi-config` and select the following actions.
     1. Expand Filesystem (Advanced Options / Expand Filesystem).
     1. Reduce GPU memory to 16MB (Advanced Options / Memory Split).
-    1. Disable ''Predictable network interfaces" (Network Options / Network interface names).
+    1. Disable "Predictable network interfaces" (Network Options / Network interface names).
 1. (Optional) Disable Wifi and Bluetooth.
     1. Run `sudo nano /boot/config.txt`.
     1. Add these lines at the end.
@@ -39,16 +42,16 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
         dtoverlay=pi3-disable-bt
         dtoverlay=pi3-disable-wifi
         ```
-1. Setup a static IP.
+1. Setup a static IP. This step is not needed if static ips are set on the switch/router.
     1. Run `sudo nano /etc/dhcpcd.conf`.
     1. Change the following lines according to the IP address that should be set.
         ```
         # Example static IP configuration:
         interface eth0
-        static ip_address=<<192.168.0.10>>/<<24>>
+        static ip_address=192.168.0.10/24
         #static ip6_address=fd51:42f8:caae:d92e::ff/64
-        static routers=<<192.168.0.1>>
-        static domain_name_servers=<<192.168.0.1 8.8.8.8 fd51:42f8:caae:d92e::1>>
+        static routers=192.168.0.1
+        static domain_name_servers=192.168.0.1 8.8.8.8 fd51:42f8:caae:d92e::1
         ```
 1. Enable all the repositories.
       1. Run `sudo nano /etc/apt/sources.list`
@@ -66,3 +69,71 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
 1. Reduce the unnecessay use of the swap memory.
       1. Run `sudo nano /etc/sysctl.conf`.
       1. Ad this line at the end `vm.swappiness=10`.
+
+
+### Setting Up HTML and SQL Servers
+
+1. Install the HTML server (Nginx is used here).
+      1. Run the following commands.
+      ```bash
+      sudo apt install nginx
+      sudo chown -R www-data:pi /var/www/html/
+      sudo chmod -R 770 /var/www/html/
+      ```
+1. Install the SQL server (PostgreSQL is used here).
+      1. Run the following command.
+         ```bash
+         sudo apt install postgresql libpq-dev postgresql-client postgresql-client-common
+         ```
+      1. Check the version installed. Run `pg_config --version`.
+1. Configure PostgreSQL.
+      1. Run the command `sudo nano /etc/postgresql/11/main/pg_hba.conf`. Use the correct version here.
+      1. Modify the "local" line to `local all all md5`.
+      1. Add the following lines
+         ```bash
+         host all all 192.168.0.0/24 trust
+         host all all 0.0.0.0/0 password
+         ```
+      1. Run the command `sudo nano /etc/postgresql/11/main/postgresql.conf`.
+      1. Add the line `listen_addresses='*'`.
+1. Restart postgresql service.
+      1. Run `sudo systemctl restart postgresql`.
+1. Create a user named **pi** and a database named **pi**.
+      1. Run `sudo su postgres`.
+      1. Run `createuser pi -P --interactive`. Then enter a password.
+      1. Run `psql`.
+      1. Run 
+         ```
+         create database pi;
+         \q
+         exit
+         ```
+
+### Install `R`
+1. Install dependencies. Run the following code.
+      ```bash
+      sudo apt-get install -y gfortran libreadline6-dev libx11-dev libxt-dev \
+       libpng-dev libjpeg-dev libcairo2-dev xvfb \
+       libbz2-dev libzstd-dev liblzma-dev \
+       libcurl4-openssl-dev \
+       texinfo texlive texlive-fonts-extra \
+       screen wget openjdk-8-jdk
+      ```
+1. Download and extract the source files. Use the link for the latest version on CRAN.
+      ```bash
+      cd /usr/local/src
+      sudo wget https://cran.rstudio.com/src/base/R-4/R-4.0.0.tar.gz
+      sudo su
+      tar zxvf R-4.0.0.tar.gz
+      cd R-4.0.0
+      ```
+1. Install R.
+      ```bash
+      ./configure --enable-R-shlib
+      make
+      make install
+      cd ..
+      rm -rf R-4.0.0*
+      exit
+      cd
+      ```

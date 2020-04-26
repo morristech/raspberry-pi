@@ -260,7 +260,7 @@ Most compilations can take a long time to run.
       ```
       sudo git clone https://github.com/getsentry/sentry-cli.git
       sudo chown -R pi sentry-cli
-      cd sentry-cli
+      cd sentry-cli # Took 55m 45s
       cargo build
       cd
       sudo rm -rf sentry-cli
@@ -268,10 +268,16 @@ Most compilations can take a long time to run.
 1. Clone RStudio from GitHub.
       1. Run `sudo git clone https://github.com/rstudio/rstudio.git`.
       1. To avoid installing crashpad, run `sudo nano /home/pi/rstudio/dependencies/common/install-common`.
-      1. Comment the following lines.
+      1. Comment the following lines and save.
       ```
       # ./install-crashpad
       # sudo ./install-crashpad
+      ```
+1. Install system dependencies
+      ```
+      cd rstudio/dependencies/common
+      sudo su
+      ./install-common --exclude-qt-sdk
       ```
 
 ### Setting Up Dynamic DNS

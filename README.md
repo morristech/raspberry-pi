@@ -1,5 +1,7 @@
 # Shiny Server Setup - Raspbian Buster
 
+This document is based on https://community.rstudio.com/t/setting-up-your-own-shiny-server-rstudio-server-on-a-raspberry-pi-3b/18982.
+
 ### Tested On
 * Raspberry Pi 4/4GB.
 * 16 GB SD card.
@@ -40,7 +42,7 @@
 1. Setup a static IP.
     1. Run `sudo nano /etc/dhcpcd.conf`.
     1. Change the following lines according to the IP address that should be set.
-        ```bash
+        ```
         # Example static IP configuration:
         interface eth0
         static ip_address=<<192.168.0.10>>/<<24>>
@@ -48,3 +50,19 @@
         static routers=<<192.168.0.1>>
         static domain_name_servers=<<192.168.0.1 8.8.8.8 fd51:42f8:caae:d92e::1>>
         ```
+1. Enable all the repositories.
+      1. Run `sudo nano /etc/apt/sources.list`
+      1. Uncomment the line with the repositories.
+1. Update packages
+      1. Run `sudo apt update && sudo apt full-upgrade`.
+1. Set up swap memory (used 3GB in this case).
+   1. Run the following commands.
+      ```bash
+      sudo /bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=3072
+      sudo /sbin/mkswap /var/swap.1
+      sudo /sbin/swapon /var/swap.1
+      sudo sh -c 'echo "/var/swap.1 swap swap defaults 0 0 " >> /etc/fstab'
+      ```
+1. Reduce the unnecessay use of the swap memory.
+      1. Run `sudo nano /etc/sysctl.conf`.
+      1. Ad this line at the end `vm.swappiness=10`.

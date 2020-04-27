@@ -53,6 +53,9 @@ This document is based on https://withr.github.io/install-shiny-server-on-raspbe
         static routers=192.168.0.1
         static domain_name_servers=192.168.0.1 8.8.8.8 fd51:42f8:caae:d92e::1
         ```
+1. Enable all the repositories.
+   1. Run `sudo nano /etc/apt/sources.list`
+   1. Uncomment the line `deb-src`.        
 1. Update packages.
       1. Run `sudo apt update && sudo apt full-upgrade`.
 1. Set up swap memory (used 3GB in this case).

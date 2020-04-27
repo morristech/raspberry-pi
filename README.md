@@ -21,7 +21,7 @@ This document is based on https://withr.github.io/install-shiny-server-on-raspbe
 1. Install Raspbian to an SD card.
     1. Use a tool such as **balenaEtcher** (https://www.balena.io/etcher/) to write the image into the SD card.
     1. See https://www.raspberrypi.org/documentation/installation/installing-images/ for other methods.
-1. (Optional) Enable SSH on the flashed OS. *This setep is not needed if you are directly connecting a monitor and peripherals*.
+1. (Optional) Enable SSH on the flashed OS. *This step is not needed if you are directly connecting a monitor and peripherals*.
     1. Add an empty file named ssh to the boot partition of the SD card, using another computer (not the Raspberry pi). See https://www.raspberrypi.org/documentation/remote-access/ssh/ for more details.
 1. Enter the SD card to the Raspberry Pi and connect the power.
 1. Access the terminal (if directly connected or using SSH). 
@@ -42,7 +42,7 @@ This document is based on https://withr.github.io/install-shiny-server-on-raspbe
         dtoverlay=pi3-disable-bt
         dtoverlay=pi3-disable-wifi
         ```
-1. Setup a static IP. This step is not needed if static ips are set on the switch/router.
+1. Setup a static IP. *This step is not needed if static ips are set on the switch/router.*
     1. Run `sudo nano /etc/dhcpcd.conf`.
     1. Change the following lines according to the IP address that should be set.
         ```

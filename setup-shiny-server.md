@@ -89,7 +89,7 @@ Most compilations can take a long time to run.
       cd ..
       rm -rf pcre2-10.34*
       ```
-1. Download and install R from the source files. Select the latest version from CRAN (https://cran.rstudio.com/src/base/). Run the following with the correct version number.
+1. Download and install R from the source files. Select the latest version from CRAN (https://cran.rstudio.com/src/base/). Run the following with the correct version number. This can take some time to compile and install.
       ```
       wget https://cran.rstudio.com/src/base/R-4/R-4.0.0.tar.gz      
       tar zxvf R-4.0.0.tar.gz
@@ -105,42 +105,33 @@ Most compilations can take a long time to run.
       
 ### Install Shiny-Server
 1. Install R package dependencies for shiny-server. Run the following commands. Select the latest packages from CRAN/GitHub.
-   ```
-      wget https://cran.r-project.org/src/contrib/Rcpp_1.0.4.6.tar.gz
-      wget https://cran.r-project.org/src/contrib/rlang_0.4.5.tar.gz
-      git clone https://github.com/r-lib/later # Installing from CRAN gave an error
-      wget https://cran.r-project.org/src/contrib/promises_1.1.0.tar.gz
-      wget https://cran.r-project.org/src/contrib/httpuv_1.5.2.tar.gz
-      wget https://cran.r-project.org/src/contrib/mime_0.9.tar.gz
-      wget https://cran.r-project.org/src/contrib/jsonlite_1.6.1.tar.gz
-      wget https://cran.r-project.org/src/contrib/digest_0.6.25.tar.gz
-      wget https://cran.r-project.org/src/contrib/htmltools_0.4.0.tar.gz
-      wget https://cran.r-project.org/src/contrib/xtable_1.8-4.tar.gz
-      wget https://cran.r-project.org/src/contrib/R6_2.4.1.tar.gz
-      wget https://cran.r-project.org/src/contrib/Cairo_1.5-12.tar.gz
-      wget https://cran.r-project.org/src/contrib/shiny_1.4.0.2.tar.gz
-      sudo R CMD INSTALL Rcpp_1.0.4.6.tar.gz
-      sudo R CMD INSTALL rlang_0.4.5.tar.gz
-      sudo R CMD INSTALL later
-      sudo R CMD INSTALL promises_1.1.0.tar.gz
-      sudo R CMD INSTALL httpuv_1.5.2.tar.gz
-      sudo R CMD INSTALL mime_0.9.tar.gz
-      sudo R CMD INSTALL jsonlite_1.6.1.tar.gz
-      sudo R CMD INSTALL digest_0.6.25.tar.gz
-      sudo R CMD INSTALL htmltools_0.4.0.tar.gz
-      sudo R CMD INSTALL xtable_1.8-4.tar.gz
-      sudo R CMD INSTALL R6_2.4.1.tar.gz
-      sudo R CMD INSTALL Cairo_1.5-12.tar.gz
-      sudo R CMD INSTALL shiny_1.4.0.2.tar.gz      
+	```
+		mkdir rpkgs
+		cd rpkgs
+		sudo su - -c "R -e \"install.packages('Rcpp', repos='http://cran.rstudio.com/')\""
+		git clone https://github.com/r-lib/later # Installing from CRAN gave an error
+		sudo R CMD INSTALL later
+		sudo su - -c "R -e \"install.packages('httpuv', repos='http://cran.rstudio.com/')\""
+		sudo su - -c "R -e \"install.packages('mime', repos='http://cran.rstudio.com/')\""
+		sudo su - -c "R -e \"install.packages('jsonlite', repos='http://cran.rstudio.com/')\""
+		sudo su - -c "R -e \"install.packages('digest', repos='http://cran.rstudio.com/')\""
+		sudo su - -c "R -e \"install.packages('htmltools', repos='http://cran.rstudio.com/')\""
+		sudo su - -c "R -e \"install.packages('xtable', repos='http://cran.rstudio.com/')\""
+		sudo su - -c "R -e \"install.packages('R6', repos='http://cran.rstudio.com/')\""
+		sudo su - -c "R -e \"install.packages('Cairo', repos='http://cran.rstudio.com/')\""
+		sudo su - -c "R -e \"install.packages('shiny', repos='http://cran.rstudio.com/')\""
+		cd ..
+		rm -rf rpkgs
    ```
 1. Install cmake from source. Select the latest version from https://cmake.org/files/.
       ```
+	  sudo su
       wget https://cmake.org/files/v3.17/cmake-3.17.1.tar.gz
       tar xzf cmake-3.17.1.tar.gz
       cd cmake-3.17.1
       ./configure
       make
-      sudo make install
+      make install
       cd
       rm -rf cmake-3.17.1*
       ```
@@ -153,32 +144,31 @@ Most compilations can take a long time to run.
       mkdir tmp
       cd tmp
       PYTHON=`which python`
-      sudo cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DPYTHON="$PYTHON" ../
-      sudo make
+      cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DPYTHON="$PYTHON" ../
+      make
       mkdir ../build
       sed -i '8s/.*/NODE_SHA256=a865e69914c568fcb28be7a1bf970236725a06a8fc66530799300181d2584a49/' ../external/node/install-node.sh # node-v12.15.0-linux-armv7l.tar.xz
       sed -i 's/linux-x64.tar.xz/linux-armv7l.tar.xz/' ../external/node/install-node.sh
       sed -i 's/https:\/\/github.com\/jcheng5\/node-centos6\/releases\/download\//https:\/\/nodejs.org\/dist\//' ../external/node/install-node.sh
-      (cd .. && sudo ./external/node/install-node.sh)
+      (cd .. && ./external/node/install-node.sh)
       (cd .. && ./bin/npm --python="${PYTHON}" install --no-optional)
       (cd .. && ./bin/npm --python="${PYTHON}" rebuild)
-      sudo make install
+      make install
       ```
 1. Configure shiny-server
       ```
       cd
-      sudo ln -s /usr/local/shiny-server/bin/shiny-server /usr/bin/shiny-server
-      sudo useradd -r -m shiny
-      sudo mkdir -p /var/log/shiny-server
-      sudo mkdir -p /srv/shiny-server
-      sudo mkdir -p /var/lib/shiny-server
-      sudo chown shiny /var/log/shiny-server
-      sudo mkdir -p /etc/shiny-server
+      ln -s /usr/local/shiny-server/bin/shiny-server /usr/bin/shiny-server
+      useradd -r -m shiny
+      mkdir -p /var/log/shiny-server
+      mkdir -p /srv/shiny-server
+      mkdir -p /var/lib/shiny-server
+      chown shiny /var/log/shiny-server
+      mkdir -p /etc/shiny-server
       cd
-      sudo wget \
-      https://raw.github.com/rstudio/shiny-server/master/config/upstart/shiny-server.conf \
-      -O /etc/init/shiny-server.conf
-      sudo chmod 777 -R /srv      
+      wget https://raw.github.com/rstudio/shiny-server/master/config/upstart/shiny-server.conf -O /etc/init/shiny-server.conf
+      chmod 777 -R /srv
+	  exit
       ```
 1. Configure shiny-server auto start.
       1. Run `sudo nano /lib/systemd/system/shiny-server.service`.

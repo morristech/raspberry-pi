@@ -74,7 +74,7 @@ This document is based on https://withr.github.io/install-shiny-server-on-raspbe
 Most compilations can take a long time to run.
 1. Install dependencies for R and shiny-server. Run the following code.
       ```
-      sudo apt-get install -y gfortran git libreadline6-dev libx11-dev libxt-dev libcairo2-dev libudunits2-dev libgdal-dev libbz2-dev libssl-dev
+      sudo apt-get install -y gfortran git libreadline6-dev libx11-dev libxt-dev libcairo2-dev libudunits2-dev libgdal-dev libbz2-dev libssl-dev npm
       ```
 1. If installing R version >=4.0.0, install PCRE2. Select the latest version from https://ftp.pcre.org/pub/pcre/. Run the following with the correct version number.
       ```
@@ -111,6 +111,7 @@ Most compilations can take a long time to run.
 	sudo su - -c "R -e \"install.packages('Rcpp', repos='http://cran.rstudio.com/')\""
 	git clone https://github.com/r-lib/later # Installing from CRAN gave an error
 	sudo R CMD INSTALL later
+	sudo su - -c "R -e \"install.packages('fs', repos='http://cran.rstudio.com/')\""
 	sudo su - -c "R -e \"install.packages('httpuv', repos='http://cran.rstudio.com/')\""
 	sudo su - -c "R -e \"install.packages('mime', repos='http://cran.rstudio.com/')\""
 	sudo su - -c "R -e \"install.packages('jsonlite', repos='http://cran.rstudio.com/')\""
@@ -119,6 +120,7 @@ Most compilations can take a long time to run.
 	sudo su - -c "R -e \"install.packages('xtable', repos='http://cran.rstudio.com/')\""
 	sudo su - -c "R -e \"install.packages('R6', repos='http://cran.rstudio.com/')\""
 	sudo su - -c "R -e \"install.packages('Cairo', repos='http://cran.rstudio.com/')\""
+	sudo su - -c "R -e \"install.packages('sourcetools', repos='http://cran.rstudio.com/')\""
 	sudo su - -c "R -e \"install.packages('shiny', repos='http://cran.rstudio.com/')\""
 	cd ..
 	rm -rf rpkgs
@@ -136,25 +138,28 @@ Most compilations can take a long time to run.
       rm -rf cmake-3.17.1*
       ```
 1. Install shiny-server
-      ```
-      git clone https://github.com/rstudio/shiny-server.git
-      cd shiny-server
-      DIR=`pwd`
-      PATH=$DIR/bin:$PATH
-      mkdir tmp
-      cd tmp
-      PYTHON=`which python`
-      cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DPYTHON="$PYTHON" ../
-      make
-      mkdir ../build
-      sed -i '8s/.*/NODE_SHA256=a865e69914c568fcb28be7a1bf970236725a06a8fc66530799300181d2584a49/' ../external/node/install-node.sh # node-v12.15.0-linux-armv7l.tar.xz
-      sed -i 's/linux-x64.tar.xz/linux-armv7l.tar.xz/' ../external/node/install-node.sh
-      sed -i 's/https:\/\/github.com\/jcheng5\/node-centos6\/releases\/download\//https:\/\/nodejs.org\/dist\//' ../external/node/install-node.sh
-      (cd .. && ./external/node/install-node.sh)
-      (cd .. && ./bin/npm --python="${PYTHON}" install --no-optional)
-      (cd .. && ./bin/npm --python="${PYTHON}" rebuild)
-      make install
-      ```
+	```
+	git clone https://github.com/rstudio/shiny-server.git
+	cd shiny-server
+	DIR=`pwd`
+	PATH=$DIR/bin:$PATH
+	mkdir tmp
+	cd tmp
+	PYTHON=`which python`
+	cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DPYTHON="$PYTHON" ../
+	make
+	mkdir ../build
+	sed -i '8s/.*/NODE_SHA256=a865e69914c568fcb28be7a1bf970236725a06a8fc66530799300181d2584a49/' ../external/node/install-node.sh # node-v12.15.0-linux-armv7l.tar.xz
+	sed -i 's/linux-x64.tar.xz/linux-armv7l.tar.xz/' ../external/node/install-node.sh
+	sed -i 's/https:\/\/github.com\/jcheng5\/node-centos6\/releases\/download\//https:\/\/nodejs.org\/dist\//' ../external/node/install-node.sh
+	(cd .. && ./external/node/install-node.sh)
+	(cd .. && ./bin/npm --python="${PYTHON}" install --no-optional)
+	npm audit fix
+	(cd .. && ./bin/npm --python="${PYTHON}" rebuild)
+	(cd .. && ./bin/node ./ext/node/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js --python="$PYTHON" rebuild)
+	make install
+	cp ../config/default.config /etc/shiny-server/shiny-server.conf
+	```
 1. Configure shiny-server
       ```
       cd
@@ -166,7 +171,6 @@ Most compilations can take a long time to run.
       chown shiny /var/log/shiny-server
       mkdir -p /etc/shiny-server
       cd
-      wget https://raw.github.com/rstudio/shiny-server/master/config/upstart/shiny-server.conf -O /etc/init/shiny-server.conf
       chmod 777 -R /srv
 	  exit
       ```
@@ -211,15 +215,25 @@ Most compilations can take a long time to run.
 This step is needed if you don't have a static public IP (most residential Internet connections do not have a static IP). As a solution, a dynamic DNS can be set. No-IP is used here (https://www.noip.com).
 1. Setup an account with No-IP.
 1. Select a domain name of choice.
-1. Run the following commands on the Raspberry Pi.
+1. Run the following commands on the Raspberry Pi. Use the correct version in the commands.
       ```
-      mkdir /home/pi/noip
-      cd /home/pi/noip
+	  cd
+      mkdir noip
+      cd noip
       wget https://www.noip.com/client/linux/noip-duc-linux.tar.gz
       tar vzxf noip-duc-linux.tar.gz
       cd noip-2.1.9-1
       sudo make
       sudo make install
+	  cd
+	  sudo rm -rf noip
       ```
 1. Login with your No-IP account username and password.
-1. 
+1. Forward the incoming traffic on port 80 to port 3838 on the IP address set earlier. The steps for port forwarding can change on the type of router. Refer the router manual. 
+
+### Adding a Shiny App
+1. Go to `cd /srv/shiny-server`
+1. Copy the Shiny app to this folder. You can use the `pscp` command (Putty) on windows to trasnfer files via SSH.
+
+**Note:**
+If the app needs to install additional packages, run `sudo R` and install the packages using the `install.packages()` function.

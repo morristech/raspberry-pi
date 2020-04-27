@@ -71,9 +71,7 @@ This document is based on https://withr.github.io/install-shiny-server-on-raspbe
 Most compilations can take a long time to run.
 1. Install dependencies for R and shiny-server. Run the following code.
       ```
-      sudo apt-get install -y gfortran git\
-         libreadline6-dev libx11-dev libxt-dev libcairo2-dev\
-         libudunits2-dev libgdal-dev
+      sudo apt-get install -y gfortran git libreadline6-dev libx11-dev libxt-dev libcairo2-dev libudunits2-dev libgdal-dev libbz2-dev
       ```
 1. If installing R version >=4.0.0, install PCRE2. Select the latest version from https://ftp.pcre.org/pub/pcre/. Run the following with the correct version number.
       ```
@@ -88,13 +86,10 @@ Most compilations can take a long time to run.
       cd ..
       rm -rf pcre2-10.34*
       ```
-1. Download and extract the source files. Select the latest version from CRAN (https://cran.rstudio.com/src/base/).
+1. Download and install R from the source files. Select the latest version from CRAN (https://cran.rstudio.com/src/base/). Run the following with the correct version number.
       ```
       wget https://cran.rstudio.com/src/base/R-4/R-4.0.0.tar.gz      
-      tar zxvf R-4.0.0.tar.gz      
-      ```      
-1. Install R.
-      ```
+      tar zxvf R-4.0.0.tar.gz
       cd R-4.0.0
       ./configure --enable-R-shlib
       make
@@ -103,25 +98,38 @@ Most compilations can take a long time to run.
       rm -rf R-4.0.0*
       exit
       cd
-      ```
+      ```      
       
 ### Install Shiny-Server
-1. Install R package dependencies for shiny-server.
-      ```
-      sudo su - -c "R -e \"install.packages('later', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('fs', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('Rcpp', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('httpuv', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('mime', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('jsonlite', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('digest', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('htmltools', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('xtable', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('R6', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('Cairo', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('sourcetools', repos='http://cran.rstudio.com/')\""
-      sudo su - -c "R -e \"install.packages('shiny', repos='http://cran.rstudio.com/')\""
-      ```
+1. Install R package dependencies for shiny-server. Run the following commands. Select the latest packages from CRAN/GitHub.
+   ```
+      wget https://cran.r-project.org/src/contrib/Rcpp_1.0.4.6.tar.gz
+      wget https://cran.r-project.org/src/contrib/rlang_0.4.5.tar.gz
+      git clone https://github.com/r-lib/later # Installing from CRAN gave an error
+      wget https://cran.r-project.org/src/contrib/promises_1.1.0.tar.gz
+      wget https://cran.r-project.org/src/contrib/httpuv_1.5.2.tar.gz
+      wget https://cran.r-project.org/src/contrib/mime_0.9.tar.gz
+      wget https://cran.r-project.org/src/contrib/jsonlite_1.6.1.tar.gz
+      wget https://cran.r-project.org/src/contrib/digest_0.6.25.tar.gz
+      wget https://cran.r-project.org/src/contrib/htmltools_0.4.0.tar.gz
+      wget https://cran.r-project.org/src/contrib/xtable_1.8-4.tar.gz
+      wget https://cran.r-project.org/src/contrib/R6_2.4.1.tar.gz
+      wget https://cran.r-project.org/src/contrib/Cairo_1.5-12.tar.gz
+      wget https://cran.r-project.org/src/contrib/shiny_1.4.0.2.tar.gz
+      sudo R CMD INSTALL Rcpp_1.0.4.6.tar.gz
+      sudo R CMD INSTALL rlang_0.4.5.tar.gz
+      sudo R CMD INSTALL later
+      sudo R CMD INSTALL promises_1.1.0.tar.gz
+      sudo R CMD INSTALL httpuv_1.5.2.tar.gz
+      sudo R CMD INSTALL mime_0.9.tar.gz
+      sudo R CMD INSTALL jsonlite_1.6.1.tar.gz
+      sudo R CMD INSTALL digest_0.6.25.tar.gz
+      sudo R CMD INSTALL htmltools_0.4.0.tar.gz
+      sudo R CMD INSTALL xtable_1.8-4.tar.gz
+      sudo R CMD INSTALL R6_2.4.1.tar.gz
+      sudo R CMD INSTALL Cairo_1.5-12.tar.gz
+      sudo R CMD INSTALL shiny_1.4.0.2.tar.gz      
+   ```
 1. Install cmake from source. Select the latest version from https://cmake.org/files/.
       ```
       wget https://cmake.org/files/v3.17/cmake-3.17.1.tar.gz

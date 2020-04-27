@@ -74,7 +74,7 @@ This document is based on https://withr.github.io/install-shiny-server-on-raspbe
 Most compilations can take a long time to run.
 1. Install dependencies for R and shiny-server. Run the following code.
       ```
-      sudo apt-get install -y gfortran git libreadline6-dev libx11-dev libxt-dev libcairo2-dev libudunits2-dev libgdal-dev libbz2-dev
+      sudo apt-get install -y gfortran git libreadline6-dev libx11-dev libxt-dev libcairo2-dev libudunits2-dev libgdal-dev libbz2-dev libssl-dev
       ```
 1. If installing R version >=4.0.0, install PCRE2. Select the latest version from https://ftp.pcre.org/pub/pcre/. Run the following with the correct version number.
       ```
@@ -106,22 +106,22 @@ Most compilations can take a long time to run.
 ### Install Shiny-Server
 1. Install R package dependencies for shiny-server. Run the following commands. Select the latest packages from CRAN/GitHub.
 	```
-		mkdir rpkgs
-		cd rpkgs
-		sudo su - -c "R -e \"install.packages('Rcpp', repos='http://cran.rstudio.com/')\""
-		git clone https://github.com/r-lib/later # Installing from CRAN gave an error
-		sudo R CMD INSTALL later
-		sudo su - -c "R -e \"install.packages('httpuv', repos='http://cran.rstudio.com/')\""
-		sudo su - -c "R -e \"install.packages('mime', repos='http://cran.rstudio.com/')\""
-		sudo su - -c "R -e \"install.packages('jsonlite', repos='http://cran.rstudio.com/')\""
-		sudo su - -c "R -e \"install.packages('digest', repos='http://cran.rstudio.com/')\""
-		sudo su - -c "R -e \"install.packages('htmltools', repos='http://cran.rstudio.com/')\""
-		sudo su - -c "R -e \"install.packages('xtable', repos='http://cran.rstudio.com/')\""
-		sudo su - -c "R -e \"install.packages('R6', repos='http://cran.rstudio.com/')\""
-		sudo su - -c "R -e \"install.packages('Cairo', repos='http://cran.rstudio.com/')\""
-		sudo su - -c "R -e \"install.packages('shiny', repos='http://cran.rstudio.com/')\""
-		cd ..
-		rm -rf rpkgs
+	mkdir rpkgs
+	cd rpkgs
+	sudo su - -c "R -e \"install.packages('Rcpp', repos='http://cran.rstudio.com/')\""
+	git clone https://github.com/r-lib/later # Installing from CRAN gave an error
+	sudo R CMD INSTALL later
+	sudo su - -c "R -e \"install.packages('httpuv', repos='http://cran.rstudio.com/')\""
+	sudo su - -c "R -e \"install.packages('mime', repos='http://cran.rstudio.com/')\""
+	sudo su - -c "R -e \"install.packages('jsonlite', repos='http://cran.rstudio.com/')\""
+	sudo su - -c "R -e \"install.packages('digest', repos='http://cran.rstudio.com/')\""
+	sudo su - -c "R -e \"install.packages('htmltools', repos='http://cran.rstudio.com/')\""
+	sudo su - -c "R -e \"install.packages('xtable', repos='http://cran.rstudio.com/')\""
+	sudo su - -c "R -e \"install.packages('R6', repos='http://cran.rstudio.com/')\""
+	sudo su - -c "R -e \"install.packages('Cairo', repos='http://cran.rstudio.com/')\""
+	sudo su - -c "R -e \"install.packages('shiny', repos='http://cran.rstudio.com/')\""
+	cd ..
+	rm -rf rpkgs
    ```
 1. Install cmake from source. Select the latest version from https://cmake.org/files/.
       ```
@@ -174,16 +174,16 @@ Most compilations can take a long time to run.
       1. Run `sudo nano /lib/systemd/system/shiny-server.service`.
       1. Add the following lines and save.
          ```
-             #!/usr/bin/env bash
-             [Unit]
-             Description=ShinyServer
-             [Service]
-             Type=simple
-             ExecStart=/usr/bin/shiny-server
-             Restart=always
-             # Environment="LANG=en_US.UTF-8"
-             ExecReload=/bin/kill -HUP $MAINPID
-             ExecStopPost=/bin/sleep 5
+         #!/usr/bin/env bash
+         [Unit]
+         Description=ShinyServer
+         [Service]
+         Type=simple
+         ExecStart=/usr/bin/shiny-server
+         Restart=always
+         # Environment="LANG=en_US.UTF-8"
+         ExecReload=/bin/kill -HUP $MAINPID
+         ExecStopPost=/bin/sleep 5
              RestartSec=1
              [Install]
              WantedBy=multi-user.target
@@ -207,65 +207,8 @@ Most compilations can take a long time to run.
          sudo chmod g+s .
          ```
 
-### Install RStudio Server
-1. Install Rust and Cargo. 
-      1. Run `sudo curl https://sh.rustup.rs -sSf | sh` and select ''Proceed with installation'' (1).
-      1. Run `source $HOME/.cargo/env`.
-1. Install sentry-cli. Run the following commands.
-      ```
-      sudo git clone https://github.com/getsentry/sentry-cli.git
-      sudo chown -R pi sentry-cli
-      cd sentry-cli # Took 55m 45s
-      cargo build
-      cd
-      sudo rm -rf sentry-cli
-      ```
-1. Clone RStudio from GitHub.
-      1. Run `sudo git clone https://github.com/rstudio/rstudio.git`.
-      1. To avoid installing crashpad, run `sudo nano /home/pi/rstudio/dependencies/common/install-common`.
-      1. Comment the following lines and save.
-      ```
-      # ./install-crashpad
-      # sudo ./install-crashpad
-      ```
-1. Install system dependencies.
-      ```
-      sudo su
-      git clone https://github.com/raspberrypi-ui/pam
-      cd pam/
-      ./configure
-      make
-      make install
-      cd rstudio/dependencies/common      
-      ./install-common --exclude-qt-sdk
-      ```
-1. Configure Java.
-      ```
-      java -Xms1800m
-      ```
-1. Install gwt compiler.
-      1. Run the following commands.
-         ```
-         cd /home/pi/rstudio
-         wget http://dl.google.com/closure-compiler/compiler-latest.zip
-         unzip compiler-latest.zip
-         ```
-      1. Replace all files if prompted.
-      1. Run the following commands.
-         ```
-         rm COPYING README.md compiler-latest.zip
-         mv closure-compiler-v20*.jar /home/pi/rstudio/src/gwt/tools/compiler/compiler.jar
-         ```
-1. Install RStudio
-   ```
-   mkdir build
-   cd build
-   cmake .. -DRSTUDIO_TARGET=Server -DCMAKE_BUILD_TYPE=Release
-   make install
-   ```
-
 ### Setting Up Dynamic DNS
-This step is needed if you don't have a static public IP (most residential Internet connections does not have a static IP). As a solution, a dynamic DNS can be set. No-IP is used here (https://www.noip.com).
+This step is needed if you don't have a static public IP (most residential Internet connections do not have a static IP). As a solution, a dynamic DNS can be set. No-IP is used here (https://www.noip.com).
 1. Setup an account with No-IP.
 1. Select a domain name of choice.
 1. Run the following commands on the Raspberry Pi.

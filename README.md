@@ -69,17 +69,16 @@ This document is based on https://withr.github.io/install-shiny-server-on-raspbe
 
 ### Install R
 Most compilations can take a long time to run.
-1. Install dependencies for R, shiny-server and RStudio. Run the following code.
+1. Install dependencies for R and shiny-server. Run the following code.
       ```
-      sudo apt-get install -y gfortran libreadline6-dev libx11-dev libxt-dev \
-       libpng-dev libjpeg-dev libcairo2-dev xvfb \
-       libbz2-dev libzstd-dev liblzma-dev \
-       libcurl4-openssl-dev libssl-dev libxml2-dev \
-       texinfo texlive texlive-fonts-extra \
-       screen wget openjdk-8-jdk git
+      sudo apt-get install -y gfortran git\
+         libreadline6-dev libx11-dev libxt-dev libcairo2-dev\
+         libudunits2-dev libgdal-dev
       ```
-1. If installing R version >=4.0.0, install PCRE2. Select the latest version from https://ftp.pcre.org/pub/pcre/.
+1. If installing R version >=4.0.0, install PCRE2. Select the latest version from https://ftp.pcre.org/pub/pcre/. Run the following with the correct version number.
       ```
+      cd
+      sudo su
       wget https://ftp.pcre.org/pub/pcre/pcre2-10.34.tar.gz
       tar zxvf pcre2-10.34.tar.gz
       cd pcre2-10.34
@@ -89,11 +88,9 @@ Most compilations can take a long time to run.
       cd ..
       rm -rf pcre2-10.34*
       ```
-1. Download and extract the source files. Use the link for the latest version on CRAN.
+1. Download and extract the source files. Select the latest version from CRAN (https://cran.rstudio.com/src/base/).
       ```
-      cd /usr/local/src
-      sudo wget https://cran.rstudio.com/src/base/R-4/R-4.0.0.tar.gz
-      sudo su
+      wget https://cran.rstudio.com/src/base/R-4/R-4.0.0.tar.gz      
       tar zxvf R-4.0.0.tar.gz      
       ```      
 1. Install R.

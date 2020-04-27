@@ -78,14 +78,7 @@ Most compilations can take a long time to run.
        texinfo texlive texlive-fonts-extra \
        screen wget openjdk-8-jdk git
       ```
-1. Download and extract the source files. Use the link for the latest version on CRAN.
-      ```
-      cd /usr/local/src
-      sudo wget https://cran.rstudio.com/src/base/R-4/R-4.0.0.tar.gz
-      sudo su
-      tar zxvf R-4.0.0.tar.gz      
-      ```
-1. If using an R version >=4.0.0, install PCRE2. Select the latest version from https://ftp.pcre.org/pub/pcre/.
+1. If installing R version >=4.0.0, install PCRE2. Select the latest version from https://ftp.pcre.org/pub/pcre/.
       ```
       wget https://ftp.pcre.org/pub/pcre/pcre2-10.34.tar.gz
       tar zxvf pcre2-10.34.tar.gz
@@ -96,6 +89,13 @@ Most compilations can take a long time to run.
       cd ..
       rm -rf pcre2-10.34*
       ```
+1. Download and extract the source files. Use the link for the latest version on CRAN.
+      ```
+      cd /usr/local/src
+      sudo wget https://cran.rstudio.com/src/base/R-4/R-4.0.0.tar.gz
+      sudo su
+      tar zxvf R-4.0.0.tar.gz      
+      ```      
 1. Install R.
       ```
       cd R-4.0.0

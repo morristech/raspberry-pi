@@ -42,7 +42,7 @@ This document is based on https://withr.github.io/install-shiny-server-on-raspbe
         dtoverlay=pi3-disable-bt
         dtoverlay=pi3-disable-wifi
         ```
-1. Setup a static IP. *This step is not needed if static ips are set on the switch/router.*
+1. Setup a static IP. *This step is not needed if static IPs are set on the switch/router.*
     1. Run `sudo nano /etc/dhcpcd.conf`.
     1. Change the following lines according to the IP address that should be set.
         ```

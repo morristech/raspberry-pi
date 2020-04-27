@@ -53,10 +53,7 @@ This document is based on https://withr.github.io/install-shiny-server-on-raspbe
         static routers=192.168.0.1
         static domain_name_servers=192.168.0.1 8.8.8.8 fd51:42f8:caae:d92e::1
         ```
-1. Enable all the repositories.
-      1. Run `sudo nano /etc/apt/sources.list`
-      1. Uncomment the line with the repositories.
-1. Update packages
+1. Update packages.
       1. Run `sudo apt update && sudo apt full-upgrade`.
 1. Set up swap memory (used 3GB in this case).
    1. Run the following commands.
@@ -66,47 +63,9 @@ This document is based on https://withr.github.io/install-shiny-server-on-raspbe
       sudo /sbin/swapon /var/swap.1
       sudo sh -c 'echo "/var/swap.1 swap swap defaults 0 0 " >> /etc/fstab'
       ```
-1. Reduce the unnecessay use of the swap memory.
+1. Reduce the unnecessay use of the swap memory. This extends the lifetime of the SD card.
       1. Run `sudo nano /etc/sysctl.conf`.
       1. Ad this line at the end `vm.swappiness=10`.
-
-### Setting Up HTML and SQL Servers
-
-1. Install the HTML server (Nginx is used here).
-      1. Run the following commands.
-         ```
-         sudo apt install nginx
-         sudo chown -R www-data:pi /var/www/html/
-         sudo chmod -R 770 /var/www/html/
-         ```
-1. Install the SQL server (PostgreSQL is used here).
-      1. Run the following command.
-         ```
-         sudo apt install postgresql libpq-dev postgresql-client postgresql-client-common
-         ```
-      1. Check the version installed. Run `pg_config --version`.
-1. Configure PostgreSQL.
-      1. Run the command `sudo nano /etc/postgresql/11/main/pg_hba.conf`. Use the correct version here.
-      1. Modify the "local" line to `local all all md5`.
-      1. Add the following lines
-         ```
-         host all all 192.168.0.0/24 trust
-         host all all 0.0.0.0/0 password
-         ```
-      1. Run the command `sudo nano /etc/postgresql/11/main/postgresql.conf`.
-      1. Add the line `listen_addresses='*'`.
-1. Restart postgresql service.
-      1. Run `sudo systemctl restart postgresql`.
-1. Create a user named **pi** and a database named **pi**.
-      1. Run ```sudo su postgres```.
-      1. Run `createuser pi -P --interactive`. Then enter a password.
-      1. Run `psql`.
-      1. Run 
-         ```
-         create database pi;
-         \q
-         exit
-         ```
 
 ### Install R
 Most compilations can take a long time to run.

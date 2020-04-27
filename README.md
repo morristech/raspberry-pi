@@ -1,6 +1,6 @@
-# Shiny Server Setup - Raspbian Buster
+# Shiny Server Setup on Raspbian Buster
 
-This document is based on https://community.rstudio.com/t/setting-up-your-own-shiny-server-rstudio-server-on-a-raspberry-pi-3b/18982.
+This document is based on https://withr.github.io/install-shiny-server-on-raspberry-pi/ and https://community.rstudio.com/t/setting-up-your-own-shiny-server-rstudio-server-on-a-raspberry-pi-3b/18982.
 
 ### Tested On
 * Raspberry Pi 4/4GB.
@@ -15,8 +15,6 @@ This document is based on https://community.rstudio.com/t/setting-up-your-own-sh
 * R
    * Version: 4.0.0 (Arbor Day)
    * Release Date: 2020-04-24
-* PostgreSQL
-   * Version: 11.7
 
 ### Boot to Raspbian
 1. Download the latest version of Raspian from https://www.raspberrypi.org/downloads/raspbian/.
